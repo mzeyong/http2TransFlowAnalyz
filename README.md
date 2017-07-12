@@ -1,1 +1,11 @@
-This is http/2 traffic analyzer 
+### HTTP/2 通信的流量分析
+
+这个是一个小工具
+用来分析HTTP/2的流量特征值的
+
+相关文章链接
+https://k2y0r3.pw/2017/07/06/http2-data-analyz/
+
+
+可以用来检测网络流中HTTP/2的流量情况，从而达到监控在局域网内部，用于捕获和确认加密的HTTP/2网页的特征值。
+
