@@ -28,30 +28,25 @@ class sniffer:
         pass
 
     def debug(self):
-        while not self.stopSignal:
-            rawData , addr = self.socketLayer.recvfrom(65535)
-            protorol , ethData = self.method.ethFrameP(rawData)
-            if protorol == 8 and len(ethData) >20:
-                version ,length ,proto ,srcIp , dstIp ,ipData = self.method.ipUnPack(ethData)
+        try:
+            while not self.stopSignal:
+                rawData , addr = self.socketLayer.recvfrom(65535)
+                protorol , ethData = self.method.ethFrameP(rawData)
+                if protorol == 8 and len(ethData) >20:
+                    version ,length ,proto ,srcIp , dstIp ,ipData = self.method.ipUnPack(ethData)
 
-                if proto == 6 and len(ipData) >= 20:
-                    srcPort , dstPort , seq ,ack ,tcpData = self.method.tcpUnPack(ipData)
+                    if proto == 6 and len(ipData) >= 20:
+                        srcPort , dstPort , seq ,ack ,tcpData = self.method.tcpUnPack(ipData)
 
-                    if srcPort == 443 or dstPort == 443:
-                        if len(tcpData) >= 6:
-                            if srcPort == 443:
-                                self.offsetDict[dstIp + '|' + str(dstPort)] = self.method.tlsUnPack('\t\t', tcpData,0,b'',srcIp,srcPort,dstIp,dstPort)
-                                # self.offsetDict[dstIp+ '|' +dstPort],h2Flag ,tlsFlag, steamId \
-                                #     ,length  = self.method.tlsUnPack('\t\t',tcpData,self.offsetDict.get(dstIp+ '|' +str(dstPort),[0,b''])[0],
-                                #                                      self.offsetDict.get(dstIp+ '|' +str(dstPort),[0,b''])[1])
-                            if dstPort == 443:
-                                self.offsetDict[srcIp + '|' + str(srcPort)]= self.method.tlsUnPack('\t\t', tcpData,0,b'',srcIp,srcPort,dstIp,dstPort)
-                                # self.offsetDict[srcIp + '|' +srcPort], h2Flag, tlsFlag, steamId\
-                                #     , length = self.method.tlsUnPack('\t\t',tcpData,self.offsetDict.get(srcIp+ '|' +str(srcPort),[0,b''])[0],
-                                #                                      self.offsetDict.get(srcIp+ '|' +str(srcPort),[0,b''])[1])
-                # print ('src : ',srcIp,'- dst : ',dstIp ,'- length :',len(tcpData))#,'- tlsFlag: ' ,tlsFlag ,'- steamID : ',steamId,'- ssllength : ',str(length))
-
-
+                        if srcPort == 443 or dstPort == 443:
+                            if len(tcpData) >= 6:
+                                if srcPort == 443:
+                                    self.offsetDict[dstIp + '|' + str(dstPort)] = self.method.tlsUnPack('\t\t', tcpData,0,b'',srcIp,srcPort,dstIp,dstPort)
+                                if dstPort == 443:
+                                    self.offsetDict[srcIp + '|' + str(srcPort)]= self.method.tlsUnPack('\t\t', tcpData,0,b'',srcIp,srcPort,dstIp,dstPort)
+        expect:
+            pass
+ 
 
 if __name__ == '__main__':
     sniffer()
