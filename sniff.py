@@ -44,7 +44,7 @@ class sniffer:
                                     self.offsetDict[dstIp + '|' + str(dstPort)] = self.method.tlsUnPack('\t\t', tcpData,0,b'',srcIp,srcPort,dstIp,dstPort)
                                 if dstPort == 443:
                                     self.offsetDict[srcIp + '|' + str(srcPort)]= self.method.tlsUnPack('\t\t', tcpData,0,b'',srcIp,srcPort,dstIp,dstPort)
-        expect:
+        except:
             pass
  
 
