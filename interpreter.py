@@ -44,12 +44,6 @@ class par:
     def tcpUnPack(data):
         srcPort, dstPort, seq, ack, lengthFlag = struct.unpack('! H H L L H', data[:14])
         offset = (lengthFlag >> 12) * 4
-        # flag_urg = (lengthFlag & 32) >> 5
-        # flag_ack = (lengthFlag & 16) >> 4
-        # flag_psh = (lengthFlag & 8) >> 3
-        # flag_rst = (lengthFlag & 4) >> 2
-        # flag_syn = (lengthFlag & 2) >> 1
-        # flag_fin = lengthFlag & 1
 
         return srcPort, dstPort, seq, ack, data[offset:]
 
@@ -87,9 +81,6 @@ class par:
             contentType, minTlsVersion, length = struct.unpack("! B 2s H",
                                                                tlsHeader + data[cursor:cursor + 5 - len(tlsHeader)])
             cursor = cursor + 5 - len(tlsHeader)
-
-            # if '23.225.207.168' in (src, dst):
-            #     print(length)
 
             if contentType == 22:
                 tempd = str(data)
@@ -130,58 +121,7 @@ class par:
                                 saveState = config.RESOURCEPOOL.poolNew(pack.id, pack)
                                 if saveState:
                                     print('new steam connect')
-                            # else:
-                            #     pack = config.RESOURCEPOOL.poolAdd(pid,src=src,dst=dst,pack = length)
-                            #     if pack :
-                            #         print ('connected success')
-                # tempddd = str(data)
-                # domains = re.search(config.DOMAINRULE, tempddd)
-                # flagupgrade = re.search(config.UPGRADEASKRULE, tempddd)
-                # flag = re.search(config.UPGRADERULE, tempddd)
-                # if domains:
-                #     domainResult = domains.group()
-                #     if domainResult.find('x10') == 0:E
-                #         domainResult = domainResult[3:]
-                #     else:
-                #         domainResult = domainResult[1:]
-                #     if len(domainResult) > 5:
-                #         if not flagupgrade and flag:
-                #             if src not in RESOURCE.clientList:
-                #                 RESOURCE.clientList.append(src)
-                #             if dst not in RESOURCE.serverList:
-                #                 RESOURCE.serverList.append(src)
-                #             if src in RESOURCE.anayzDict.keys():
-                #                 if domainResult not in RESOURCE.anayzDict[src][dst]['domain'].keys():
-                #                     RESOURCE.anayzDict[src][dst]['domain'][domainResult] = True
-                #                 RESOURCE.anayzDict[src][dst]['tempDATA'] = []
-                #             else:
-                #                 if src:
-                #                     RESOURCE.anayzDict[src] = {dst: {'tempDATA': [], 'domain': {}, 'result': {}}}
-                #                     RESOURCE.anayzDict[src][dst]['domain'][domainResult] = True
-                #         print(RESOURCE.anayzDict)
-                # tempddd = data[str(data).find('\x00\x10'):str(data).find('\x00\x17')])
-                # if 5 < length:
-                #     # tempddd = str(data)
-                #     print(data)
-                #     # res1 = re.search(UPGRADEASKRULE, tempddd)
-                #     # print(res1)
-                #     # res1 = re.search(UPGRADERULE, tempddd)
-                #     # print(res1)
-                #     handShakeType, handShakeLength = struct.unpack("! B I", data[cursor:cursor + 5])
-                #
-                #     lenHand = handShakeLength >> 8
-                #
-                #     if handShakeType == 1:
-                #         pass
-                #         # par.handle_client_hello(config.DATA_TAB_4, data[cursor + 4:], lenHand)  # 从版本号开始分析 为了解决3bytes的数据
-                #     elif handShakeType == 2:
-                #         pass
-                #         # par.handle_server_hello(config.DATA_TAB_4, data[cursor + 4:], lenHand)
-                #     else:
-                #         pass
-
-                # return par.tls_multiple_praise(length, cursor, data, dst=dst, src=src,srcPort = dstPort , dstPort = srcPort)
-
+                        
             if contentType == 23:
                 packid = packetInfo.checkSteam(src = src ,dst = dst,srcPort = srcPort , dstPort = dstPort)
 
@@ -201,35 +141,7 @@ class par:
                             config.RESOURCEPOOL.steamPool[packid].dstPack.append(length)
                     if length == 41 or length == 0:
                         config.RESOURCEPOOL.poolSave(packid)
-                #
-                # # file.write("tls version : "+tls_version(minTlsVersion)+"  "+"TLSlength:" + str(length) +" " +"TCPLength:"+str(len(data)) +' '+'offset : ' + str(offset) +"\n")
-                # # print("TLS content Type :%d" % contentType)
-                # # print("TLS version :%s" % tls_version(minTlsVersion))
-                # # print("TLS Length : %d" % length)
-                # # try:
-                # #     if length == 41:
-                # #         if src in RESOURCE.serverList:
-                # #             if len(RESOURCE.anayzDict[src][dst]['tempDATA']) > 0:
-                # #                 RESOURCE.anayzDict[src][dst]['result'][
-                # #                     str(RESOURCE.anayzDict[src][dst]['tempDATA'])] = True
-                # #                 RESOURCE.anayzDict[src][dst]['tempDATA'] = []
-                # #         elif dst in RESOURCE.serverList:
-                # #             if len(RESOURCE.anayzDict[dst][src]['tempDATA']) > 0:
-                # #                 RESOURCE.anayzDict[dst][src]['result'][
-                # #                     str(RESOURCE.anayzDict[src][dst]['tempDATA'])] = True
-                # #                 RESOURCE.anayzDict[dst][src]['tempDATA'] = []
-                # #     else:
-                # #         if src in RESOURCE.serverList:
-                # #             RESOURCE.anayzDict[src][dst]['tempDATA'].append(length)
-                # #         elif dst in RESOURCE.serverList:
-                # #             RESOURCE.anayzDict[dst][src]['tempDATA'].append(length)
-                # # except Exception as Error:
-                # #     print(Error)
-                # # print(RESOURCE.anayzDict)
-                # return par.tls_multiple_praise(length, cursor, data, dst=dst, src=src,srcPort = srcPort , dstPort = dstPort)
-
-            ########################################################
-
+   
 
             return [0, b'']
         elif (len(data[cursor:]) > 0) and data[cursor] == 23:  # 这才是分片的关键 tls一个头部可能会被藏在两个分片中，需要判断第一个是否\x17
